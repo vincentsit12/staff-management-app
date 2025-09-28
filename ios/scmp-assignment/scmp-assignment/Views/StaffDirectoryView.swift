@@ -36,7 +36,7 @@ struct StaffDirectoryView: View {
                     ForEach(viewModel.staffList) { staff in
                         StaffRowView(staff: staff)
                             .onAppear {
-                                // Load more when reaching the last item
+                                // Auto-load more when reaching the last item
                                 if staff.id == viewModel.staffList.last?.id {
                                     Task {
                                         await viewModel.loadMoreStaff()
@@ -45,7 +45,7 @@ struct StaffDirectoryView: View {
                             }
                     }
                     
-                    // Load more button
+                    // Load more indicator
                     if viewModel.hasMorePages {
                         HStack {
                             Spacer()
@@ -57,12 +57,9 @@ struct StaffDirectoryView: View {
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             } else {
-                                Button("Load More") {
-                                    Task {
-                                        await viewModel.loadMoreStaff()
-                                    }
-                                }
-                                .foregroundColor(.blue)
+                                Text("Load more")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
                             }
                             Spacer()
                         }
@@ -71,6 +68,9 @@ struct StaffDirectoryView: View {
                     }
                 }
                 .listStyle(PlainListStyle())
+                .refreshable {
+                    await viewModel.refreshData()
+                }
             }
         }
         .navigationTitle("Staff List")

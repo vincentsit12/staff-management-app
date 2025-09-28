@@ -76,6 +76,9 @@ struct LoginView: View {
             Spacer()
         }
         .navigationBarHidden(true)
+        .onAppear {
+            viewModel.resetLoginState()
+        }
         .alert("Error", isPresented: $viewModel.showError) {
             Button("OK") {
                 viewModel.clearError()

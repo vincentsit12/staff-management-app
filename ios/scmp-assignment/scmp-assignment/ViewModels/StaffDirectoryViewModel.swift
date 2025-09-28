@@ -27,8 +27,19 @@ class StaffDirectoryViewModel: ObservableObject {
         await loadStaffList()
     }
     
+    func refreshData() async {
+        currentPage = 1
+        staffList = []
+        hasMorePages = true
+        await loadStaffList()
+    }
+    
     func loadMoreStaff() async {
-        guard !isLoadingMore && hasMorePages else { return }
+        guard !isLoadingMore && !isLoading && hasMorePages else { return }
+        
+        // Small delay to prevent too rapid loading
+        try? await Task.sleep(nanoseconds: 300_000_000) // 0.3 seconds
+        
         await loadStaffList()
     }
     

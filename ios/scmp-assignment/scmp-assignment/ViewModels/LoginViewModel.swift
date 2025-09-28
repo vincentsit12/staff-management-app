@@ -83,4 +83,14 @@ class LoginViewModel: ObservableObject {
         showError = false
         errorMessage = ""
     }
+    
+    func resetLoginState() {
+        email = ""
+        password = ""
+        isLoading = false
+        errorMessage = ""
+        showError = false
+        loginToken = ""
+        isLoggedIn = false
+    }
 }
