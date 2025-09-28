@@ -1,0 +1,11 @@
+//
+//  Config.xcconfig
+//  scmp-assignment
+//
+//  Created by Vincent Sit on 28/9/2025.
+//
+
+// API Configuration
+
+// For demo only, suppose this file will be ignored
+API_KEY = reqres-free-v1

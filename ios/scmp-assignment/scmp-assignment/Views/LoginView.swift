@@ -95,7 +95,7 @@ struct LoginView: View {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         LoginView()
     }
 }

@@ -21,7 +21,7 @@ class NetworkService {
     private init() {}
     
     func login(email: String, password: String) async throws -> LoginResponse {
-        guard let url = URL(string: "https://reqres.in/api/login?delay=5") else {
+        guard let url = URL(string: "https://reqres.in/api/login?delay=0") else {
             throw NetworkError.invalidURL
         }
         
@@ -30,6 +30,7 @@ class NetworkService {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(Configuration.apiKey, forHTTPHeaderField: "x-api-key")
         
         do {
             request.httpBody = try JSONEncoder().encode(loginRequest)
@@ -50,6 +51,33 @@ class NetworkService {
         do {
             let loginResponse = try JSONDecoder().decode(LoginResponse.self, from: data)
             return loginResponse
+        } catch {
+            throw NetworkError.decodingError
+        }
+    }
+    
+    func fetchStaffList(page: Int) async throws -> StaffListResponse {
+        guard let url = URL(string: "https://reqres.in/api/users?page=\(page)") else {
+            throw NetworkError.invalidURL
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue(Configuration.apiKey, forHTTPHeaderField: "x-api-key")
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NetworkError.unknown
+        }
+        
+        guard httpResponse.statusCode == 200 else {
+            throw NetworkError.serverError(httpResponse.statusCode)
+        }
+        
+        do {
+            let staffResponse = try JSONDecoder().decode(StaffListResponse.self, from: data)
+            return staffResponse
         } catch {
             throw NetworkError.decodingError
         }
