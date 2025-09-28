@@ -25,6 +25,7 @@ struct StaffDirectoryView: View {
             
             // Staff list
             if viewModel.isLoading && viewModel.staffList.isEmpty {
+                // Only show loading view on first load (when list is empty)
                 VStack {
                     Spacer()
                     ProgressView("Loading staff...")
@@ -32,44 +33,62 @@ struct StaffDirectoryView: View {
                     Spacer()
                 }
             } else {
+                // Show list (even if empty) with refresh capability
                 List {
-                    ForEach(viewModel.staffList) { staff in
-                        StaffRowView(staff: staff)
-                            .onAppear {
-                                // Auto-load more when reaching the last item
-                                if staff.id == viewModel.staffList.last?.id {
-                                    Task {
-                                        await viewModel.loadMoreStaff()
-                                    }
-                                }
-                            }
-                    }
-                    
-                    // Load more indicator
-                    if viewModel.hasMorePages {
-                        HStack {
+                    if viewModel.staffList.isEmpty {
+                        // Empty state within the list
+                        VStack {
                             Spacer()
-                            if viewModel.isLoadingMore {
+                            Text("No staff found")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                    } else {
+                        ForEach(viewModel.staffList) { staff in
+                            StaffRowView(staff: staff)
+                        }
+                    }
+                }
+                .listStyle(.plain)
+                .refreshable {
+                    await viewModel.loadInitialData()
+                }
+            
+                // Load more footer
+                if viewModel.hasMorePages {
+                    VStack {
+                        if viewModel.isLoadingMore {
+                            HStack {
                                 ProgressView()
                                     .progressViewStyle(CircularProgressViewStyle())
                                     .scaleEffect(0.8)
                                 Text("Loading more...")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
-                            } else {
-                                Text("Load more")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
                             }
-                            Spacer()
+                            .padding()
+                        } else {
+                            Button(action: {
+                                Task {
+                                    await viewModel.loadMoreStaff()
+                                }
+                            }) {
+                                Text("Load More")
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 44)
+                                    .background(viewModel.isLoading ? Color.gray : Color.blue)
+                                    .cornerRadius(8)
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.bottom, 16)
+                            .disabled(viewModel.isLoading)
                         }
-                        .padding()
-                        .listRowSeparator(.hidden)
                     }
-                }
-                .listStyle(PlainListStyle())
-                .refreshable {
-                    await viewModel.refreshData()
                 }
             }
         }

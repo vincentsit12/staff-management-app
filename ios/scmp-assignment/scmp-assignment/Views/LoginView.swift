@@ -12,15 +12,13 @@ struct LoginView: View {
     @State private var navigateToStaffDirectory = false
     
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 40) {
             // Title
             Text("LOGIN")
                 .font(.largeTitle)
                 .fontWeight(.bold)
                 .foregroundColor(.primary)
                 .padding(.top, 40)
-            
-            Spacer()
             
             // Form
             VStack(spacing: 16) {
@@ -70,6 +68,7 @@ struct LoginView: View {
                     .cornerRadius(8)
                 }
                 .disabled(!viewModel.isFormValid || viewModel.isLoading)
+                .padding(.top, 16)
             }
             .padding(.horizontal, 24)
             

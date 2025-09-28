@@ -36,7 +36,7 @@ class LoginViewModel: ObservableObject {
         let passwordPredicate = NSPredicate(format: "SELF MATCHES %@", passwordRegex)
         return passwordPredicate.evaluate(with: password)
     }
-    
+
     func login() async {
         guard isFormValid else {
             errorMessage = "Please enter valid email and password (6-10 characters, letters and numbers only)"
@@ -50,6 +50,7 @@ class LoginViewModel: ObservableObject {
         
         do {
             let response = try await networkService.login(email: email, password: password)
+            
             loginToken = response.token
             isLoggedIn = true
         } catch {
